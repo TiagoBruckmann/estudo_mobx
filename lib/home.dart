@@ -1,6 +1,10 @@
+// imports nativos do flutter
 import 'package:flutter/material.dart';
+
+// import dos pacotes
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:mobx/mobx.dart';
+
+// import dos controladores mobx
 import 'package:mobx_contador/core/mobx/incremet_mobx.dart';
 
 class Home extends StatefulWidget {
