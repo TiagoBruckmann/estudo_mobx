@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 
 // import dos pacotes
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:provider/provider.dart';
 import 'package:mobx/mobx.dart';
 
 // import dos controladores mobx
 import 'package:mobx_contador/core/mobx/incremet_mobx.dart';
+import 'package:mobx_contador/principal.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -17,7 +19,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
 
-  final IncrementMobX _incrementMobX = IncrementMobX();
+  late IncrementMobX _incrementMobX; // = IncrementMobX();
   ReactionDisposer? _reactionDisposer;
   
   @override
@@ -28,11 +30,20 @@ class _HomeState extends State<Home> {
       print(_incrementMobX.formValidate);
     });
     */
+    
+    _incrementMobX = Provider.of<IncrementMobX>(context);
 
     reaction(
       (context) => _incrementMobX.formValidate,
-      (value) {
-        print(value);
+      (userLogued) {
+        if ( userLogued == true ) {
+
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (builder) => const Principal(),
+            ),
+          );
+        }
       }
     );
   }
@@ -85,21 +96,6 @@ class _HomeState extends State<Home> {
               },
             ),
 
-            /*
-            Observer(
-              builder: (builder) {
-
-                return Text(
-                  "${_incrementMobX.counter}",
-                  style: const TextStyle(
-                    color: Colors.black54,
-                    fontSize: 25,
-                  ),
-                );
-              },
-            ),
-            */
-
             Padding(
               padding: const EdgeInsets.all(16),
               child: Observer(
@@ -119,7 +115,7 @@ class _HomeState extends State<Home> {
                   );
 
                 },
-              )
+              ),
             ),
 
           ],
