@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 // import dos pacotes
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:mobx/mobx.dart';
 
 // import dos controladores mobx
 import 'package:mobx_contador/core/mobx/incremet_mobx.dart';
@@ -17,7 +18,30 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
 
   final IncrementMobX _incrementMobX = IncrementMobX();
+  ReactionDisposer? _reactionDisposer;
+  
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    /*
+    autorun((context) {
+      print(_incrementMobX.formValidate);
+    });
+    */
 
+    reaction(
+      (context) => _incrementMobX.formValidate,
+      (value) {
+        print(value);
+      }
+    );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _reactionDisposer!();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,11 +54,29 @@ class _HomeState extends State<Home> {
           child: Column(
           children: [
 
+            Padding (
+              padding: const EdgeInsets.all(16),
+              child: TextField(
+                decoration: const InputDecoration(labelText: "Email"),
+                onChanged: _incrementMobX.setEmail,
+              ),
+            ),
+
+            Padding (
+              padding: const EdgeInsets.all(16),
+              child: TextField(
+                decoration: const InputDecoration(labelText: "senha"),
+                onChanged: _incrementMobX.setPassword,
+              ),
+            ),
+
             Observer(
-              builder: (builder) {
+              builder: (context) {
 
                 return Text(
-                  "${_incrementMobX.increment}",
+                  ( _incrementMobX.formValidate == true )
+                  ? "Campos válidos"
+                  : "Campos inválidos",
                   style: const TextStyle(
                     color: Colors.black54,
                     fontSize: 25,
@@ -43,24 +85,41 @@ class _HomeState extends State<Home> {
               },
             ),
 
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: ElevatedButton(
-                child: const Text("Incrementar"),
-                onPressed: () {
-                  _incrementMobX.incrementer!();
-                },
-              ),
+            /*
+            Observer(
+              builder: (builder) {
+
+                return Text(
+                  "${_incrementMobX.counter}",
+                  style: const TextStyle(
+                    color: Colors.black54,
+                    fontSize: 25,
+                  ),
+                );
+              },
             ),
+            */
 
             Padding(
               padding: const EdgeInsets.all(16),
-              child: ElevatedButton(
-                child: const Text("Decrementar"),
-                onPressed: () {
-                  _incrementMobX.decrement!();
+              child: Observer(
+                builder: (context) {
+
+                  return ElevatedButton(
+                    child: ( _incrementMobX.loading == true )
+                    ? const CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation(Colors.white70),
+                    )
+                    : const Text("Conectar"),
+                    onPressed: ( _incrementMobX.formValidate == true )
+                    ? () {
+                      _incrementMobX.login();
+                    }
+                    : null,
+                  );
+
                 },
-              ),
+              )
             ),
 
           ],
